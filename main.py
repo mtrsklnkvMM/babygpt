@@ -2,8 +2,10 @@
 import os
 import time
 from collections import deque
+from typing import Optional
 from dotenv import load_dotenv
 from agents.IAgent import AgentData
+from agents.ITask import Task
 from agents.browser_agent import BrowserAgent
 from agents.logger_agent import LoggerAgent
 from agents.task_prioritiser_agent import ObjectiveCompletionAgent
@@ -23,29 +25,28 @@ browser_agent = BrowserAgent(BROWSER_API_KEY, BROWSER_API_ENGINE)
 openai_provider = OpenAiProvider(OPENAI_API_KEY)
 logger = LoggerAgent()
 task_processor = TaskProcessor()
-list_of_tasks = deque([])
+current_task: Optional[Task] = None
 completed_tasks = deque([])
 
 OBJECTIVE = os.getenv("OBJECTIVE", "")
 
 agent_data = AgentData(objective=OBJECTIVE,
-                       active_tasks=list_of_tasks,
+                       active_task=current_task,
                        completed_tasks=completed_tasks,
-                       vectordb=None,
                        open_ai=openai_provider,
                        browser=browser_agent,
                        logger=logger)
 
 logger.log(f"Starting solving: {agent_data.objective}")
 
-task_processor.task_creation_agent.create_first_task(agent_data)
+task_processor.task_creation_agent.create_tasks(None, agent_data)
 
 for day in range(1, 6):
-    if not list_of_tasks:
+    if current_task is None:
         logger.log("No more tasks to process")
         break
     
-    logger.log(f"Day {day}: Starting Task {list_of_tasks[0]}")
+    logger.log(f"Day {day}: Starting Task {current_task}")
     
     task_processor.process_task(agent_data)
     

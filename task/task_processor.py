@@ -9,7 +9,6 @@ class TaskProcessor:
         self.execution_agent = ExecutionDispatcherAgent()
 
     def process_task(self, agent: AgentData):
-        new_task = agent.active_tasks.popleft()
-        task_with_results = self.execution_agent.dispatch(new_task, agent)
+        task_with_results = self.execution_agent.dispatch(agent)
         agent.completed_tasks.append(task_with_results)
         self.task_creation_agent.create_tasks(task_with_results, agent)

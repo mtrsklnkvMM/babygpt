@@ -1,6 +1,6 @@
 import re
 from agents.IAgent import AgentData
-from agents.ITask import Task
+from agents.ITask import ExecutionAgent, Task
 import spacy
 from spacy.lang.en.stop_words import STOP_WORDS
 from string import punctuation
@@ -53,11 +53,27 @@ class ResultSummarizerAgent:
         
         return ' '.join(summaries)
     
-    def summarize(self, task: Task, agent: AgentData):
-        result = self.summarize_text(task.result, 10)
+    def summarize(self, data: str, task: Task, agent: AgentData):
+        result = self.summarize_text(data, 10)
+
+        prompt = f"""Please summarize and compile these results: {result} so that it is cleaner and easier to understand.
+            Include relevant information, interesting URL (https:... etc) and examples that support the following expected output: {task.expected_output}.
+            Provide extensive information, and feel free to include as many particulars as possible.
+
+            Note: judge the relevance of the final summary (return "Grade: ?/10", 0 would be no relevant data), please be strict while assessing the quality of the base text in relation to the task.
+            """
+
+        response = agent.open_ai.generate_text(prompt, 0.1)
+
+        agent.logger.log(f"Task Summary: {response}")
+        return response
+    
+
+    def summarize2(self, data: str, task: ExecutionAgent, agent: AgentData):
+        result = self.summarize_text(data, 10)
 
         prompt = f"""Please rewrite this base text: {result} so that it is cleaner and easier to understand.
-            Include relevant information, interesting URL (https:... etc) and examples that support the following task at hand: {task.description}.
+            Include relevant information, interesting URL (https:... etc) and examples that support the following task at hand: {task.expected_output}.
             Provide extensive information, and feel free to include as many particulars as possible.
 
             Note: judge the relevance of the BASE TEXT (return "Grade: ?/10", 0 would be an error in the data), please be strict while assessing the quality of the base text in relation to the task.

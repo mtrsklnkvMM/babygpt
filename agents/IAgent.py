@@ -1,6 +1,4 @@
-from collections import deque
-from typing import NamedTuple
-from vector.weaviate import Weaviate
+from typing import NamedTuple, Optional
 from .ITask import Task
 from agents.browser_agent import BrowserAgent
 from agents.logger_agent import LoggerAgent
@@ -9,9 +7,9 @@ from completion.openai_provider import OpenAiProvider
 
 class AgentData(NamedTuple):
     objective: str
-    active_tasks: deque[Task]
+    active_task: Optional[Task]
     completed_tasks: list[Task]
-    vectordb: Weaviate
     open_ai: OpenAiProvider
     browser: BrowserAgent
     logger: LoggerAgent
+    
