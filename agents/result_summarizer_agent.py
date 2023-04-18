@@ -55,33 +55,36 @@ class ResultSummarizerAgent:
     def summarize(self, data: str, task: Task, agent: AgentData):
         result = self.summarize_text(data, 10)
 
-        prompt = f"""
-            Include relevant information, interesting URL (https:... etc) and examples.
-            Provide extensive information, and feel free to include as many particulars as possible.
-            
-            Output: A JSON with the following format ONLY:
+        prompt = f"""Please provide a JSON output with the following format:
             - output_summary : Rewrite the following text: {result}. Include relevant information, interesting URL (https:... etc) and examples. Provide extensive information, and feel free to include as many particulars as possible. Please DO NOT create new content or provide your own analysis, just use the raw data. This is extremely important.
             - insights : Give a list of relevant insights please.
             - grade : Judge the relevance of the final summary with regards to the expected outcome: "{task.expected_output}" (return "Grade: ?/10", 0 would be no relevant data), please be strict while assessing the quality of the base text in relation to the task.
             - new_tasks : Give a small list of follow up tasks based on the summary and the insights.
 
-            Example:
-            {
+            Please provide as many particulars as possible and be as specific as you can. Include relevant information, interesting URL (https:... etc) and examples.
+
+            Example JSON:
+            {{
                 "output_summary": "We discovered new types of medecines etc..",
                 "insights": [
-                    {
+                    {{
                         "description": "Identified the main topic of the input text.",
                         "value": "Science"
-                    },
-                    {
+                    }},
+                    {{
                         "description": "Most important URL in the text",
                         "value": "https://blabla.com"
-                    },
-                    {...}
+                    }},
+                    {{...}}
                 ],
                 "grade": "5/10",
-                "new_tasks": "Categorize Medecines, Investigate the URL https://blabla.com, summarize all previous tasks, etc..."
-            }
+                "new_tasks": [
+                    "Categorize Medecines",
+                    "Investigate the URL https://blabla.com",
+                    "summarize all previous tasks",
+                     "etc..."
+                ]
+            }}
             """
 
         response = agent.open_ai.generate_text(prompt, 0.1)
