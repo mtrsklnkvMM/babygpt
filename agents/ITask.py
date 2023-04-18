@@ -23,7 +23,7 @@ class ExecutionAgent:
             name = agent_dict['name']
             input_val = agent_dict['input']
             expected_output = agent_dict['expected_output']
-            result = agent_dict['result']
+            result = agent_dict.get('result', None)
         except (KeyError, TypeError):
             # Return an empty ExecutionAgent instance if there is an error getting any required data from the dict
             return cls("", "", "")
