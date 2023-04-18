@@ -71,6 +71,9 @@ class TaskCreationAgent:
         
         new_task = Task.from_json(response)
         
+        # filter out execution_agents whose name is not within ["search_google", "foo"]
+        new_task.execution_agents = [ea for ea in new_task.execution_agents if ea['name'] in ["search_google", "search_ddg", "scrape"]]
+
         agent.logger.log(f"New Task: {new_task.description}")
 
         agent.active_task = new_task
