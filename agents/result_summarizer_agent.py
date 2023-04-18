@@ -1,7 +1,7 @@
 import json
 import re
 from agents.IAgent import AgentData
-from agents.ITask import ExecutionAgent, Task
+from agents.ITask import ExecutionAgent, Task, TaskResult
 import spacy
 from spacy.lang.en.stop_words import STOP_WORDS
 from string import punctuation
@@ -102,8 +102,14 @@ class ResultSummarizerAgent:
 
         response = agent.open_ai.generate_text(prompt, 0.5)
 
+        # Parse the JSON string as a dictionary
+        input_dict = json.loads(response)
+
+        # Create a TaskResult instance using the NamedTuple constructor
+        task_result = TaskResult(**input_dict)
+
         agent.logger.log(f"Task Summary: {response}")
-        return response
+        return task_result
     
 
     def reduceRawData(self, data: str, task: ExecutionAgent, agent: AgentData):

@@ -18,12 +18,14 @@ class TaskCreationAgent:
             agent.completed_tasks.append(last_task)
         
         complete_string = " AND ".join(complete.description for complete in agent.completed_tasks)
+        new_task_name = last_task.result.new_task if last_task is not None else ""
+        new_checklist = last_task.result.checklist if last_task is not None else []
 
         prompt = f''' You are a Task Creator Agent.
                 Our global objective is to {agent.objective}.
-                Current task name: {last_task.result}
+                Current task name: {new_task_name}
 
-                Checklist: []
+                Checklist: {new_checklist}
 
                 Output: A JSON representing the new task.
 
