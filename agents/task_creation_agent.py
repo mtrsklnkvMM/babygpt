@@ -2,9 +2,12 @@ from agents.IAgent import AgentData
 from agents.ITask import Task
 
 
+
 class TaskCreationAgent:
     def __init__(self):
         pass
+
+
 
     def create_tasks(self, agent: AgentData = None):
         last_task = agent.active_task
@@ -16,23 +19,23 @@ class TaskCreationAgent:
         
         complete_string = " AND ".join(complete.description for complete in agent.completed_tasks)
 
-        prompt = f''' You are a Task Creator Agent. You create a task based on the following inputs:
+        prompt = f''' You are a Task Creator Agent.
 
             Inputs:
             - Final Objective: {agent.objective}.
             - Previous task result: {last_task.result}.
 
-            Output: A JSON representing a new task that advances our objective, based on the insights and the new_tasks from the previous task (choose from new_tasks if suitable):
-            - description : short description of the task
-            - execution_agents : please return a maximum of 3 execution_agents, you can select the same agent multiple times. Use information from the previous task.
-            - expected_output : what to expect in the output based on the description
+            Output: A JSON representing a new task that advances our objective, based on the new_tasks recommendations:
+            - description : short description of the new task, chosen from the new_tasks recommendations, if any.
+            - execution_agents : please return a maximum of 3 execution_agents, you can use the same agent multiple times.
+            - expected_output : what to expect in the output based on the description.
             
-            This new task should NOT overlap with any previous tasks mentioned in : {complete_string}.
+            This new task should NOT OVERLAP with any completed tasks mentioned in : {complete_string}. Keep in mind the Final Objective.
             
             Please follow this schema, this should be a valid JSON:
 
             {{
-            "description": description of the new task,
+            "description": description of the new task chosen from the new_tasks recommendations,
             "execution_agents": [
                     {{
                     "name": "browse", // google search
@@ -48,7 +51,7 @@ class TaskCreationAgent:
                     }},
                     {{
                     "name": "scrape", // scrape a website that you learned from the previous task results
-                    "input": a single url // coming from the previous results ONLY rather than relying on your internal memory!!!
+                    "input": a single url // coming from the previous results ONLY rather than relying on your internal memory, don't make up URLs this is extremely important!!!
                     "expected_output": what is expected as output,
                     "result": keep empty
                     }}
@@ -70,7 +73,7 @@ class TaskCreationAgent:
                     }},
                     {{
                     "name": "scrape",
-                    "input": "http://blabla.com",
+                    "input": "http://blabla.com", // coming from the previous results ONLY
                     "expected_output": "try to get info about the blabla website",
                     "result": ""
                     }},
@@ -81,7 +84,7 @@ class TaskCreationAgent:
             }}
             '''
 
-        response = agent.open_ai.generate_text(prompt)
+        response = agent.open_ai.generate_text(prompt, 0.7)
         
         agent.logger.log(f"New Tasks: {response}")
         

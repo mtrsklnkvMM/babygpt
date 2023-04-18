@@ -1,3 +1,5 @@
+import json
+import re
 from agents.IAgent import AgentData
 from agents.ITask import ExecutionAgent, Task
 import spacy
@@ -10,6 +12,8 @@ class ResultSummarizerAgent:
     def __init__(self):
         self.nlp = spacy.load('en_core_web_sm')
         pass
+
+
 
     def summarize_text(self, text, num_sentences=10, chunk_size=1000000):
         summaries = []
@@ -52,31 +56,40 @@ class ResultSummarizerAgent:
         
         return ' '.join(summaries)
     
-    def summarize(self, data: str, task: Task, agent: AgentData):
-        result = self.summarize_text(data, 10)
+
+    def extract_grade(self, text):
+        pattern = r"\bGrade:\s*(\d)/10\b"
+        match = re.search(pattern, text)
+        if match:
+            return int(match.group(1))
+        else:
+            return 10
+        
+
+    
+    def summarize(self, exec_agents: list[ExecutionAgent], task: Task, agent: AgentData):
+        results = []
+        for exec_agent in exec_agents:
+            grade = self.extract_grade(exec_agent.result)
+            if grade > 5:
+                results.append(exec_agent.result)
+        
+        data = json.dumps(results)
+        result = self.summarize_text(data, 20)
 
         prompt = f"""Please provide a JSON output with the following format:
+
             - output_summary : Rewrite the following text: {result}. Include relevant information, interesting URL (https:... etc) and examples. Provide extensive information, and feel free to include as many particulars as possible. Please DO NOT create new content or provide your own analysis, just use the raw data. This is extremely important.
-            - insights : Give a short list of insights (max 3) where the value is extremely important info from the summary.
+            
             - grade : Judge the relevance of the final summary with regards to the expected outcome: "{task.expected_output}" (return "Grade: ?/10", 0 would be no relevant data), please be strict while assessing the quality of the base text in relation to the task.
-            - new_tasks : Give a small list of follow up tasks based on the summary and the insights.
+            
+            - new_tasks : Give a small list of follow up tasks based on the output_summary, including URLs, names, experience etc.
 
             Please provide as many particulars as possible and be as specific as you can. Include relevant information, interesting URL (https:... etc) and examples.
 
             Example JSON:
             {{
-                "output_summary": "We discovered new types of medecines etc..",
-                "insights": [
-                    {{
-                        "description": "Identified the main topic of the input text.",
-                        "value": "Science"
-                    }},
-                    {{
-                        "description": "Most important URL in the text",
-                        "value": "https://blabla.com"
-                    }},
-                    {{...}}
-                ],
+                "output_summary": "We discovered new types of medecines...",
                 "grade": "5/10",
                 "new_tasks": [
                     "Categorize Medecines",
@@ -87,7 +100,7 @@ class ResultSummarizerAgent:
             }}
             """
 
-        response = agent.open_ai.generate_text(prompt, 0.1)
+        response = agent.open_ai.generate_text(prompt, 0.5)
 
         agent.logger.log(f"Task Summary: {response}")
         return response
@@ -95,15 +108,17 @@ class ResultSummarizerAgent:
 
     def reduceRawData(self, data: str, task: ExecutionAgent, agent: AgentData):
         result = self.summarize_text(data, 20)
+        agent.logger.log(f"reduceRawData: {task.name}")
+        agent.logger.log(f"Original Raw Data: {result}")
 
-        prompt = f"""Please rewrite the following text: {result}.
-            Your summary should provide a clear overview of the main points discussed in the text, with a focus on information that is relevant to achieving the following outcome: {task.expected_output}.
+        prompt = f"""Please provide a comprehensive and detailed summary of the following text: {result}.
             
-            Please DO NOT create new content or provide your own analysis. Instead, focus on extracting relevant information and presenting it in a logical and easy-to-understand manner.
-            
-            Please include any URLs (https:... etc) or examples that help to illustrate the key points.
-            Your summary should be comprehensive and detailed, and be at the very leats 2 paragraphs long.
-            """
+                    Please provide names, places or URLs (https:... etc) that help to illustrate these points.
+
+                    Avoid adding your own analysis or opinions; instead, focus on presenting the information in an objective manner.
+
+                    Finally, please include a list of potential follow-up tasks based on the insights and observations presented in the summary. These tasks should be actionable and relevant to the objective at hand ({task.expected_output}), and could include tasks related to research, data analysis, or further investigation.
+                 """
 
         response = agent.open_ai.generate_text(prompt, 0.1)
 

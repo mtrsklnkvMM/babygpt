@@ -27,7 +27,7 @@ class ExecutionAgent:
 
 
 class Task:
-    def __init__(self, description, execution_agents: ExecutionAgent, expected_output, result = None):
+    def __init__(self, description, execution_agents: list[ExecutionAgent], expected_output, result = None):
         self.description = description
         self.execution_agents = execution_agents
         self.expected_output = expected_output
