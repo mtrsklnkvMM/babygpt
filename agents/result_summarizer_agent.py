@@ -1,4 +1,3 @@
-import re
 from agents.IAgent import AgentData
 from agents.ITask import ExecutionAgent, Task
 import spacy
@@ -56,16 +55,33 @@ class ResultSummarizerAgent:
     def summarize(self, data: str, task: Task, agent: AgentData):
         result = self.summarize_text(data, 10)
 
-        prompt = f"""Please rewrite this result: {result} so that it is cleaner and easier to understand.
-
+        prompt = f"""
             Include relevant information, interesting URL (https:... etc) and examples.
             Provide extensive information, and feel free to include as many particulars as possible.
-            This should be at least 4 paragraphs long.
-            Include any action to be followed on to dig deeper.
             
-            Please DON'T CREATE INFORMATION, just use whatever is in the result. This is extremely important.
+            Output: A JSON with the following format ONLY:
+            - output_summary : Rewrite the following text: {result}. Include relevant information, interesting URL (https:... etc) and examples. Provide extensive information, and feel free to include as many particulars as possible. Please DO NOT create new content or provide your own analysis, just use the raw data. This is extremely important.
+            - insights : Give a list of relevant insights please.
+            - grade : Judge the relevance of the final summary with regards to the expected outcome: "{task.expected_output}" (return "Grade: ?/10", 0 would be no relevant data), please be strict while assessing the quality of the base text in relation to the task.
+            - new_tasks : Give a small list of follow up tasks based on the summary and the insights.
 
-            Note: judge the relevance of the final summary with the regards to the expected outcome "{task.expected_output}" (return "Grade: ?/10", 0 would be no relevant data), please be strict while assessing the quality of the base text in relation to the task.
+            Example:
+            {
+                "output_summary": "We discovered new types of medecines etc..",
+                "insights": [
+                    {
+                        "description": "Identified the main topic of the input text.",
+                        "value": "Science"
+                    },
+                    {
+                        "description": "Most important URL in the text",
+                        "value": "https://blabla.com"
+                    },
+                    {...}
+                ],
+                "grade": "5/10",
+                "new_tasks": "Categorize Medecines, Investigate the URL https://blabla.com, summarize all previous tasks, etc..."
+            }
             """
 
         response = agent.open_ai.generate_text(prompt, 0.1)
@@ -74,13 +90,13 @@ class ResultSummarizerAgent:
         return response
     
 
-    def summarize2(self, data: str, task: ExecutionAgent, agent: AgentData):
+    def reduceRawData(self, data: str, task: ExecutionAgent, agent: AgentData):
         result = self.summarize_text(data, 10)
 
-        prompt = f"""Please rewrite this base text: {result} so that it is cleaner and easier to understand.
-            Include relevant information, interesting URL (https:... etc) and examples.
-            Provide extensive information, and feel free to include as many particulars as possible.
-            Include any action to be followed on to dig deeper.
+        prompt = f"""Please rewrite the following text: {result}.
+            Your summary should provide a clear and concise overview of the main points discussed in the text, with a focus on information that is relevant to achieving the following outcome: {task.expected_output}.
+            Please DO NOT create new content or provide your own analysis. Instead, focus on extracting relevant information and presenting it in a logical and easy-to-understand manner.
+            If possible, please include any URLs (https:... etc) or examples that help to illustrate the key points. Your summary should be comprehensive and detailed.
             """
 
         response = agent.open_ai.generate_text(prompt, 0.1)

@@ -16,19 +16,20 @@ class TaskCreationAgent:
         
         complete_string = " AND ".join(complete.description for complete in agent.completed_tasks)
 
-        prompt = f'''
-            You are a Task Creator Agent. You create a task based on the following inputs:
+        prompt = f''' You are a Task Creator Agent. You create a task based on the following inputs:
 
             Inputs:
             - Final Objective: {agent.objective}.
             - Previous task result: {last_task.result}.
 
-            Output: 
-            - A JSON representing a new task that advances our objective. The new task should be based on the previous task result.
-
-            The new task should NOT overlap with any previous tasks mentioned in : {complete_string}.
-            Please be very precise and craft your task based on the previous task result if any.
-            Please follow this schema, this should be a valid JSON with no syntax issue:
+            Output: A JSON representing a new task that advances our objective, based on the insights and the new_tasks from the previous task:
+            - description : short description of the task
+            - execution_agents : please return a maximum of 3 execution_agents, you can select the same agent multiple times. Use information from the previous task.
+            - expected_output : what to expect in the output based on the description
+            
+            This new task should NOT overlap with any previous tasks mentioned in : {complete_string}.
+            
+            Please follow this schema, this should be a valid JSON:
 
             {{
             "description": description of the new task,
