@@ -21,6 +21,7 @@ class ExecutionDispatcherAgent:
                 dispatcher = DispatcherAgent(exec_agent.name, agent)
                 data = dispatcher.dispatch(exec_agent.input)
                 raw_data = json.dumps(data)
+                agent.logger.log(f"""test2: {raw_data}""")
                 full_result = ResultSummarizerAgent().reduceRawData(raw_data, exec_agent, agent)
                 exec_agent.result = full_result
                 

@@ -43,11 +43,11 @@ class TaskCreationAgent:
                 "name": string,
                 "input": string,
                 "expected_output": string,
-                "result": string
+                "result": None
                 }}
                 ],
                 "expected_output": string,
-                "result": string
+                "result": None
                 }}
 
                 Notes:
@@ -56,10 +56,12 @@ class TaskCreationAgent:
                 The "execution_agents" field may include a maximum of four (4) agents. Use the execution_agents to try and solve the Checklist:
                 The "name" field in the "execution_agents" array should be STRICTLY one of the following: "search_google" with keywords as input, "search_ddg" with keywords as input, or "scrape" with a website URL as input. You don't need to use them all, they can be used multiple times.
                 If there is a URL we can use in the Checklist, use it for the “scrape” execution_agent. Otherwise, DO NOT USE the “scrape” execution_agent AT ALL.
+                
+                Warning: Do not use any other names for the "name" field in the "execution_agents" array other than "search_google", "search_ddg", or "scrape". If you do, you will receive a negative score and the task will be invalid.
 
                 The "input" field in the "execution_agents" should always be a string.
                 The "expected_output" field should describe what is expected to be produced as output.
-                The "result" field should be left blank and will be filled in once the task is executed.
+                The "result" field should be set to None and will be filled in once the task is executed.
             '''
 
         agent.logger.log(f"Creation Prompt: {prompt}")
@@ -70,4 +72,6 @@ class TaskCreationAgent:
         
         new_task = Task.from_json(response)
         
+        agent.logger.log(f"New Task: {new_task}")
+
         agent.active_task = new_task
