@@ -14,7 +14,7 @@ class ExecutionAgent:
             name = agent_dict['name']
             input_val = agent_dict['input']
             expected_output = agent_dict['expected_output']
-            result = agent_dict.get('result')
+            result = agent_dict['result']
         except (KeyError, TypeError):
             # Return an empty ExecutionAgent instance if there is an error getting any required data from the dict
             return cls("", "", "")
@@ -41,8 +41,10 @@ class Task:
     @classmethod
     def from_json(cls, json_string):
         try:
+            print(json_string)
             json_dict = json.loads(json_string)
-        except (json.JSONDecodeError, TypeError):
+        except (json.JSONDecodeError, TypeError) as e:
+            print(f"An error occurred while parsing JSON: {e}")
             # Return an empty task if there is an error parsing the JSON string
             return cls("", [], "")
         
@@ -52,6 +54,7 @@ class Task:
                 agent = ExecutionAgent.from_dict(agent_dict)
                 execution_agents.append(agent)
             except TypeError:
+                print("error")
                 # If there is an error creating an ExecutionAgent instance, skip that agent
                 pass
         
@@ -61,6 +64,7 @@ class Task:
             expected_output = json_dict['expected_output']
             result = json_dict['result']
         except (KeyError, TypeError):
+            print("error1")
             return cls("", [], "")
         
         return cls(description=description,

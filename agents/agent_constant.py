@@ -30,3 +30,14 @@ Return ONLY the requests as a LIST containing ONLY the API requests without ANY 
 # 3. yelp(https://api.yelp.com/v3/path, params) [provide only the path, and the params]
 #             4. arxiv(params) [using arxiv API, provide only the params]
 # 3. openweather(path, params) [provide th path and params]
+
+
+
+# {{
+#                     "name": "newsapi", // use the news API
+#                     "input": "(country, category)", //dont forget the quotes
+#                     "expected_output": what is expected as output,
+#                     "result": keep empty
+#                     }}
+
+

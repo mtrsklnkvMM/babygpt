@@ -39,14 +39,8 @@ agent_data = AgentData(objective=OBJECTIVE,
 
 logger.log(f"Starting solving: {agent_data.objective}")
 
-task_processor.task_creation_agent.create_tasks(None, agent_data)
-
 for day in range(1, 6):
-    if current_task is None:
-        logger.log("No more tasks to process")
-        break
-    
-    logger.log(f"Day {day}: Starting Task {current_task}")
+    logger.log(f"Day {day}: Starting Task > ")
     
     task_processor.process_task(agent_data)
     

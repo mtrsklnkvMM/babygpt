@@ -7,8 +7,8 @@ from agents.result_summarizer_agent import ResultSummarizerAgent
 
 
 class ExecutionDispatcherAgent:
-    def __init__(self, agent: AgentData):
-        self.agent = agent
+    def __init__(self):
+        pass
 
 
     def extract_grade(self, text):
@@ -19,21 +19,23 @@ class ExecutionDispatcherAgent:
         else:
             return 10
 
-    def executeAll(self):
+
+    def executeAll(self, agent: AgentData):
         result = []
-        task = self.agent.active_task
+        task = agent.active_task
+
+        agent.logger.log(f"""test: {task.description}""")
 
         if task is not None:
             for exec in task.execution_agents:
                 exec_agent: ExecutionAgent = exec
-                dispatcher = DispatcherAgent(exec_agent.name, self.agent)
+                dispatcher = DispatcherAgent(exec_agent.name, agent)
                 r = dispatcher.dispatch(exec_agent.input)
                 rr = json.dumps(r)
-
-                full_result = ResultSummarizerAgent().summarize2(rr, exec_agent, self.agent)
+                full_result = ResultSummarizerAgent().summarize2(rr, exec_agent, agent)
                 exec_agent.result = full_result
                 result.append(r)
         
         result_dump = [json.dumps(execution_agent.result) for execution_agent in task.execution_agents]
-        full_result2 = ResultSummarizerAgent().summarize(",".join(result_dump), task, self.agent)
-        return full_result2
+        full_result2 = ResultSummarizerAgent().summarize(" AND ".join(result_dump), task, agent)
+        agent.active_task.result = full_result2

@@ -20,11 +20,12 @@ class BrowserAgent:
             return old_value.replace('\\', ' ')
     
 
-    def browse_google(self, query, num_results=3):
+    def browse_google(self, query, num_results=10):
         try:
             stripped_query = self.strip_query(query)
             res = self.service.cse().list(q=stripped_query, cx=self.engine_id, num=num_results).execute()
             links = [r['link'] for r in res['items']]
+
             return links[:2]
         
         except HttpError as error:
@@ -44,9 +45,9 @@ class BrowserAgent:
             return []
         
 
-    def browse(self, query, num_results=3):
+    def browse(self, query):
         try:
-            return self.browse_google(query, num_results)
+            return self.browse_google(query)
         
         except HttpError as error:
             print(f'An error occurred while browsing Google: {error}')

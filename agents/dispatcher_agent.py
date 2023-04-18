@@ -11,6 +11,7 @@ class DispatcherAgent:
         self.hugging_dispatcher = None
         self.openai = None
         self.browser = None
+        self.agent_data = agent_data
 
         if name in ["wikipedia", "yelp", "arxiv", "nhanes", 'openweather', "jsonplaceholder", "pubmed", "newsapi", "clinicaltrials"]:
             self.api_dispatcher = APIDispatcher(name)

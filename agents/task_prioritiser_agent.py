@@ -6,15 +6,22 @@ class ObjectiveCompletionAgent:
         pass
         
     def conclude(self,  agent: AgentData):
-        description_string = " AND ".join(task.description for task in agent.active_tasks)
+        description_string = " AND ".join(task.result for task in agent.completed_tasks)
 
-        agent.logger.log(f"""List of tasks remaining: {description_string}""")
+        if len(description_string) > 6000:
+                description_string = description_string[:6000] + '...'
 
-        prompt = f"""You are a Result Compiler Agent.
-        Based on the following completed tasks: {agent.completed_tasks}, 
-        Your job is to compile and write a comprehensive answer to that objective: {agent.objective}
-        
-        Note: Assess your work at the very end, and include ideas on how to improve output (what would our team of agents need to achieve the goal)"""
+        prompt = f"""You are task to address {agent.objective}:
+
+        Input:
+        - Objective: {agent.objective}.
+        - Completed tasks: {description_string}.
+
+        Ouput:
+        - Write a comprehensive answer to our objective using only the result from the completed tasks.
+        DO NOT make up things, just use the data available, this is extremely important. Please be very specific and provide lots of details.
+        -Assess your work at the very end give yourself a grade
+        -Give a few new objective ideas."""
         
         agent.logger.log(f"""Conclusion Prompt: {prompt}""")
         response = agent.open_ai.generate_text(prompt)

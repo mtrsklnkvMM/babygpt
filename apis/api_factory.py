@@ -74,11 +74,11 @@ class ArxivAPI:
         
         return abstracts
     
-class NewsApi:
+class NewsApi(APIFactory):
     def __init__(self):
         self.base_url = "https://newsapi.org/v2/"
         
-    def get_top_headlines(self, country=None, category=None):
+    def make_api_call(self, country=None, category=None):
         url = self.base_url + "top-headlines"
         params = {
             "apiKey": self.api_key
@@ -94,7 +94,7 @@ class NewsApi:
             print(f"Error: {response.status_code} - {response.text}")
             return []
         
-    def make_api_call(self, query, language=None, sources=None):
+    def make_api_call2(self, query, language=None, sources=None):
         url = self.base_url + "everything"
         params = {
             "apiKey": self.api_key,

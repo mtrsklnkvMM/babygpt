@@ -1,4 +1,3 @@
-from typing import Optional
 from agents.IAgent import AgentData
 from agents.ITask import Task
 
@@ -7,20 +6,29 @@ class TaskCreationAgent:
     def __init__(self):
         pass
 
-    def create_tasks(self, last_task: Optional[Task] = None, agent: AgentData = None):
-        
+    def create_tasks(self, agent: AgentData = None):
+        last_task = agent.active_task
+
         if last_task is None:
             last_task = Task.empty()
+        else:
+            agent.completed_tasks.append(last_task)
         
+        complete_string = " AND ".join(complete.description for complete in agent.completed_tasks)
+
         prompt = f'''
-            You are a Task Creator Agent.
+            You are a Task Creator Agent. You create a task based on the following inputs:
 
             Inputs:
             - Final Objective: {agent.objective}.
-            - Previous task result: {last_task.result}
-            - Previous task description: {last_task.description}
+            - Previous task result: {last_task.result}.
 
-            Output: A JSON representing a new task based on the information in the input, following this schema:
+            Output: 
+            - A JSON representing a new task that advances our objective. The new task should be based on the previous task result.
+
+            The new task should NOT overlap with any previous tasks mentioned in : {complete_string}.
+            Please be very precise and craft your task based on the previous task result if any.
+            Please follow this schema, this should be a valid JSON with no syntax issue:
 
             {{
             "description": description of the new task,
@@ -32,8 +40,14 @@ class TaskCreationAgent:
                     "result": keep empty
                     }},
                     {{
+                    "name": "browse_ddg", // duck duck go search
+                    "input": keywords for duck duck go search engine,
+                    "expected_output": what is expected as output,
+                    "result": keep empty
+                    }},
+                    {{
                     "name": "scrape", // scrape a website
-                    "input": a single url,
+                    "input": a single url coming from the previous results ONLY,
                     "expected_output": what is expected as output,
                     "result": keep empty
                     }}
@@ -51,25 +65,25 @@ class TaskCreationAgent:
                     "name": "browse",
                     "input": "hotel London cheap",
                     "expected_output": "looking for a list of cheap hotels in London",
-                    "result": None
+                    "result": ""
                     }},
                     {{
                     "name": "scrape",
                     "input": "http://blabla.com",
                     "expected_output": "try to get info about the blabla website",
-                    "result": None
+                    "result": ""
                     }},
-                    {{ ... }},
+                    {{ ... }}
             ],
             "expected_output": "cheap accomodations including info from blabla site",
-            "result": None
+            "result": ""
             }}
             '''
 
         response = agent.open_ai.generate_text(prompt)
         
         agent.logger.log(f"New Tasks: {response}")
-
+        
         new_task = Task.from_json(response)
-
+        
         agent.active_task = new_task
