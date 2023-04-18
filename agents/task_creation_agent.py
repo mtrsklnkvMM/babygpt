@@ -20,68 +20,38 @@ class TaskCreationAgent:
         complete_string = " AND ".join(complete.description for complete in agent.completed_tasks)
 
         prompt = f''' You are a Task Creator Agent.
+                Our global objective is to {agent.objective}.
+                Current task name: {last_task.result}
 
-            Inputs:
-            - Final Objective: {agent.objective}.
-            - Previous task result: {last_task.result}.
+                Checklist: []
 
-            Output: A JSON representing a new task that advances our objective, based on the new_tasks recommendations:
-            - description : short description of the new task, chosen from the new_tasks recommendations, if any.
-            - execution_agents : please return a maximum of 3 execution_agents, you can use the same agent multiple times.
-            - expected_output : what to expect in the output based on the description.
-            
-            This new task should NOT OVERLAP with any completed tasks mentioned in : {complete_string}. Keep in mind the Final Objective.
-            
-            Please follow this schema, this should be a valid JSON:
+                Output: A JSON representing the new task.
 
-            {{
-            "description": description of the new task chosen from the new_tasks recommendations,
-            "execution_agents": [
-                    {{
-                    "name": "browse", // google search
-                    "input": keywords for google search engine,
-                    "expected_output": what is expected as output,
-                    "result": keep empty
-                    }},
-                    {{
-                    "name": "browse_ddg", // duck duck go search
-                    "input": keywords for duck duck go search engine,
-                    "expected_output": what is expected as output,
-                    "result": keep empty
-                    }},
-                    {{
-                    "name": "scrape", // scrape a website that you learned from the previous task results
-                    "input": a single url // coming from the previous results ONLY rather than relying on your internal memory, don't make up URLs this is extremely important!!!
-                    "expected_output": what is expected as output,
-                    "result": keep empty
-                    }}
-            ],
-            "expected_output": what to expect in the output based on the task description,
-            "result": keep empty
-            }}
+                Schema:
+                {{
+                "description": "",
+                "execution_agents": [
+                {{
+                "name": string,
+                "input": string,
+                "expected_output": string,
+                "result": string
+                }}
+                ],
+                "expected_output": string,
+                "result": string
+                }}
 
-            Here is an example that you should follow, please return a maximum of 3 execution_agents:
+                Notes:
+                If there is no task name or checklist, it means it is the first task so use your own but always only return the JSON as output.
 
-            {{
-            "description": "find accomodation in London (...)",
-            "execution_agents": [
-                    {{
-                    "name": "browse",
-                    "input": "hotel London cheap",
-                    "expected_output": "looking for a list of cheap hotels in London",
-                    "result": ""
-                    }},
-                    {{
-                    "name": "scrape",
-                    "input": "http://blabla.com", // coming from the previous results ONLY
-                    "expected_output": "try to get info about the blabla website",
-                    "result": ""
-                    }},
-                    {{ ... }}
-            ],
-            "expected_output": "cheap accomodations including info from blabla site",
-            "result": ""
-            }}
+                The "execution_agents" field may include a maximum of four (4) agents. Use the execution_agents to try and solve the Checklist:
+                The "name" field in the "execution_agents" array should be one of the following: "search_google" with keywords as input, "search_ddg" with keywords as input, or "scrape" with a website URL as input. You don't need to use them all, they can be used multiple times.
+                If there is a URL we can use in the Checklist, use it for the “scrape” execution_agent. Otherwise, DO NOT USE the “scrape” execution_agent AT ALL.
+
+                The "input" field in the "execution_agents" should always be a string.
+                The "expected_output" field should describe what is expected to be produced as output.
+                The "result" field should be left blank and will be filled in once the task is executed.
             '''
 
         agent.logger.log(f"Creation Prompt: {prompt}")

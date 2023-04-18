@@ -1,4 +1,13 @@
 import json
+from typing import NamedTuple, Optional
+
+
+class TaskResult(NamedTuple):
+    output_summary: str
+    grade: str
+    new_task: str
+    checklist: list[str]
+
 
 
 class ExecutionAgent:
@@ -27,7 +36,7 @@ class ExecutionAgent:
 
 
 class Task:
-    def __init__(self, description, execution_agents: list[ExecutionAgent], expected_output, result = None):
+    def __init__(self, description, execution_agents: list[ExecutionAgent], expected_output, result: Optional[TaskResult] = None):
         self.description = description
         self.execution_agents = execution_agents
         self.expected_output = expected_output

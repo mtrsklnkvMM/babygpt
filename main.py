@@ -46,5 +46,5 @@ for day in range(1, 6):
     
     time.sleep(1)
 
-ObjectiveCompletionAgent().conclude(agent_data)
+#ObjectiveCompletionAgent().conclude(agent_data)
 logger.close()

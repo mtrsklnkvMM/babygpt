@@ -75,28 +75,28 @@ class ResultSummarizerAgent:
                 results.append(exec_agent.result)
         
         data = json.dumps(results)
-        result = self.summarize_text(data, 20)
+        result = self.summarize_text(data, 10)
 
         prompt = f"""Please provide a JSON output with the following format:
 
-            - output_summary : Rewrite the following text: {result}. Include relevant information, interesting URL (https:... etc) and examples. Provide extensive information, and feel free to include as many particulars as possible. Please DO NOT create new content or provide your own analysis, just use the raw data. This is extremely important.
-            
+            - output_summary : Rewrite the following text: "{result}". Include all relevant information, interesting URL (https:... etc) and examples. Provide extensive information, and feel free to include as many particulars as possible. Please DO NOT create new content or provide your own analysis, just use the raw data. This is extremely important.
+                        
             - grade : Judge the relevance of the final summary with regards to the expected outcome: "{task.expected_output}" (return "Grade: ?/10", 0 would be no relevant data), please be strict while assessing the quality of the base text in relation to the task.
-            
-            - new_tasks : Give a small list of follow up tasks based on the output_summary, including URLs, names, experience etc.
+                        
+            - new_task : Based on the output summary and our global objective "{agent.objective}" , come up with a relevant follow up task description.
 
-            Please provide as many particulars as possible and be as specific as you can. Include relevant information, interesting URL (https:... etc) and examples.
+            - checklist : List of the things to do to complete the new_task. Be specific and concise.
 
             Example JSON:
             {{
                 "output_summary": "We discovered new types of medecines...",
                 "grade": "5/10",
-                "new_tasks": [
-                    "Categorize Medecines",
-                    "Investigate the URL https://blabla.com",
-                    "summarize all previous tasks",
-                     "etc..."
-                ]
+                "new_task": "Categorize Medecines",
+                "checklist": [
+					"check the following site https://blabla.com",
+					"Search for this medecine in particular",
+					"etc..."
+				]
             }}
             """
 
@@ -107,7 +107,7 @@ class ResultSummarizerAgent:
     
 
     def reduceRawData(self, data: str, task: ExecutionAgent, agent: AgentData):
-        result = self.summarize_text(data, 20)
+        result = self.summarize_text(data, 10)
         agent.logger.log(f"reduceRawData: {task.name}")
         agent.logger.log(f"Original Raw Data: {result}")
 
@@ -118,6 +118,8 @@ class ResultSummarizerAgent:
                     Avoid adding your own analysis or opinions; instead, focus on presenting the information in an objective manner.
 
                     Finally, please include a list of potential follow-up tasks based on the insights and observations presented in the summary. These tasks should be actionable and relevant to the objective at hand ({task.expected_output}), and could include tasks related to research, data analysis, or further investigation.
+                    
+                    Note: Judge the relevance of the final summary with regards to the expected outcome: "{task.expected_output}" (return "Grade: ?/10", 0 would be no relevant data), please be strict while assessing the quality of the base text in relation to the task.
                  """
 
         response = agent.open_ai.generate_text(prompt, 0.1)

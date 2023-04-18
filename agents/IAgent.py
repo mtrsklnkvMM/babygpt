@@ -5,13 +5,6 @@ from agents.logger_agent import LoggerAgent
 from completion.openai_provider import OpenAiProvider
 
 
-# class AgentData(NamedTuple):
-#     objective: str
-#     active_task: Optional[Task]
-#     completed_tasks: list[Task]
-#     open_ai: OpenAiProvider
-#     browser: BrowserAgent
-#     logger: LoggerAgent
 
 class AgentData(object):
     def __init__(self, objective: str, active_task: Optional[Task], completed_tasks: list[Task],
@@ -22,4 +15,3 @@ class AgentData(object):
         self.open_ai = open_ai
         self.browser = browser
         self.logger = logger
-          
