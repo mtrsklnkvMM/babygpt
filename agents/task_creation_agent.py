@@ -33,7 +33,7 @@ class TaskCreationAgent:
 
                 Checklist: {new_checklist}
 
-                Output: A JSON representing the new task.
+                Output: A JSON following the schema representing the new task.
 
                 Schema:
                 {{
@@ -49,16 +49,18 @@ class TaskCreationAgent:
                 }}
 
                 Notes:
-                If there is no task name or checklist, it means it is the first task so use your own but always only return the JSON as output.
+                    If there is no task name or checklist, it means it is the first task so use your own but always only return the JSON as output.
 
-                The "execution_agents" field may include a maximum of four (4) agents. Use the execution_agents to try and solve the Checklist:
-                The "name" field in the "execution_agents" array should be STRICTLY one of the following: "search_google" with keywords as input, "search_ddg" with keywords as input, or "scrape" with a website URL as input. You don't need to use them all, they can be used multiple times.
-           
-                Warning: If there is a URL we can use in the Checklist, use it for the "scrape" execution_agent. Otherwise, DO NOT USE the “scrape” execution_agent AT ALL. If you do, you will receive a negative score and the task will be invalid.
-                Warning: Do not use any other names for the "name" field in the "execution_agents" array other than "search_google", "search_ddg", or "scrape". If you do, you will receive a negative score and the task will be invalid.
+                    The "execution_agents" field may include a maximum of four (4) agents. Use the execution_agents to try and solve the Checklist:
+                    The "name" field in the "execution_agents" array should be STRICTLY one of the following: "search_google" with keywords as input, "search_ddg" with keywords as input, or "scrape" with a website URL as input. You don't need to use them all, they can be used multiple times.
+            
+                    Warning: If there is a URL we can use in the Checklist, use it for the "scrape" execution_agent. Otherwise, DO NOT USE the “scrape” execution_agent AT ALL. If you do, you will receive a negative score and the task will be invalid.
+                    Warning2: Do not use any other names for the "name" field in the "execution_agents" array other than "search_google", "search_ddg", or "scrape". If you do, you will receive a negative score and the task will be invalid.
 
-                The "input" field in the "execution_agents" should always be a string.
-                The "expected_output" field should describe what is expected to be produced as output.
+                    The "input" field in the "execution_agents" should always be a string.
+                    The "expected_output" field should describe what is expected to be produced as output.
+
+                    Return only the JSON, no other comments please.
             '''
 
         agent.logger.log(f"Creation Prompt: {prompt}")
