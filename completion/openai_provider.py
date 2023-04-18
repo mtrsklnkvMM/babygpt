@@ -35,5 +35,5 @@ class OpenAiProvider:
             return generated_text
     
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred: {e} ++ {prompt}")
             return ''

@@ -23,6 +23,6 @@ class ObjectiveCompletionAgent:
         -Assess your work at the very end give yourself a grade
         -Give a few new objective ideas."""
         
-        agent.logger.log(f"""Conclusion Prompt: {prompt}""")
+        #agent.logger.log(f"""Conclusion Prompt: {prompt}""")
         response = agent.open_ai.generate_text(prompt)
         agent.logger.log(f"""Conclusion: {response}""")

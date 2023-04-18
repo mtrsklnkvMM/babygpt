@@ -71,11 +71,11 @@ class ResultSummarizerAgent:
         results = []
         for exec_agent in exec_agents:
             grade = self.extract_grade(exec_agent.result)
-            if grade > 5:
+            if grade > 4:
                 results.append(exec_agent.result)
         
         data = json.dumps(results)
-        agent.logger.log(f"Task data: {data}")
+        #agent.logger.log(f"Task data: {data}")
         result = self.summarize_text(data, 10)
 
         prompt = f"""Please provide a JSON output with the following format:
@@ -86,7 +86,7 @@ class ResultSummarizerAgent:
                         
             - new_task : Based on the output summary and our global objective "{agent.objective}" , come up with a relevant follow up task description.
 
-            - checklist : List of the things to do to complete the new_task. Be specific and concise.
+            - checklist : List of the things to do to complete the new_task. Be specific and concise. Include URL/names/keywords to search etc.
 
             Example JSON:
             {{
@@ -109,14 +109,14 @@ class ResultSummarizerAgent:
         # Create a TaskResult instance using the NamedTuple constructor
         task_result = TaskResult(**input_dict)
 
-        agent.logger.log(f"Task Summary: {response}")
+        agent.logger.log(f"Task Summary: {task.description} - {response}")
         return task_result
     
 
     def reduceRawData(self, data: str, task: ExecutionAgent, agent: AgentData):
         result = self.summarize_text(data, 10)
-        agent.logger.log(f"reduceRawData: {task.name}")
-        agent.logger.log(f"Original Raw Data: {result}")
+        #agent.logger.log(f"reduceRawData: {task.name}")
+        #agent.logger.log(f"Original Raw Data: {result}")
 
         prompt = f"""Please provide a comprehensive and detailed summary of the following text: {result}.
             
@@ -131,5 +131,5 @@ class ResultSummarizerAgent:
 
         response = agent.open_ai.generate_text(prompt, 0.1)
 
-        agent.logger.log(f"Execution Agent Summary: {response}")
+        agent.logger.log(f"Execution Agent Summary: {task.name} - {response}")
         return response

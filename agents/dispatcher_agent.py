@@ -40,9 +40,9 @@ class DispatcherAgent:
         elif self.browser:
             browser_api = self.browser
             if self.name == "search_google":
-                r = browser_api.search(*params)
+                r = browser_api.search(*params, self.agent_data)
             elif self.name == "search_ddg":
-                r = browser_api.searchDDG(*params)
+                r = browser_api.searchDDG(*params, self.agent_data)
             elif self.name == "scrape":
                 r = browser_api.scrape(*params)
 
