@@ -19,7 +19,7 @@ class DispatcherAgent:
             self.hugging_dispatcher = HuggingDispatcher(name)
         elif name in ["openai"]:
             self.openai = agent_data.open_ai
-        elif name in ["browse", "scrape", "browse_ddg"]:
+        elif name in ["search_google", "scrape", "search_ddg"]:
             self.browser = agent_data.browser
         else:
             raise ValueError(f"Invalid dispatcher name: {name}")
@@ -39,9 +39,9 @@ class DispatcherAgent:
             return r
         elif self.browser:
             browser_api = self.browser
-            if self.name == "browse":
+            if self.name == "search_google":
                 r = browser_api.search(*params)
-            elif self.name == "browse_ddg":
+            elif self.name == "search_ddg":
                 r = browser_api.searchDDG(*params)
             elif self.name == "scrape":
                 r = browser_api.scrape(*params)
