@@ -71,7 +71,7 @@ class Task:
         try:
             description = json_dict['description']
             expected_output = json_dict['expected_output']
-            result = json_dict['result']
+            result = json_dict.get('result', None)
         except (KeyError, TypeError):
             print("error1")
             return cls("", [], "")
