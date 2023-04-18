@@ -84,6 +84,8 @@ class TaskCreationAgent:
             }}
             '''
 
+        agent.logger.log(f"Creation Prompt: {prompt}")
+
         response = agent.open_ai.generate_text(prompt, 0.7)
         
         agent.logger.log(f"New Tasks: {response}")
