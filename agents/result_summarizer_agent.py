@@ -75,6 +75,7 @@ class ResultSummarizerAgent:
                 results.append(exec_agent.result)
         
         data = json.dumps(results)
+        agent.logger.log(f"Task data: {data}")
         result = self.summarize_text(data, 10)
 
         prompt = f"""Please provide a JSON output with the following format:

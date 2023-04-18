@@ -54,7 +54,7 @@ class TaskCreationAgent:
                 If there is no task name or checklist, it means it is the first task so use your own but always only return the JSON as output.
 
                 The "execution_agents" field may include a maximum of four (4) agents. Use the execution_agents to try and solve the Checklist:
-                The "name" field in the "execution_agents" array should be one of the following: "search_google" with keywords as input, "search_ddg" with keywords as input, or "scrape" with a website URL as input. You don't need to use them all, they can be used multiple times.
+                The "name" field in the "execution_agents" array should be STRICTLY one of the following: "search_google" with keywords as input, "search_ddg" with keywords as input, or "scrape" with a website URL as input. You don't need to use them all, they can be used multiple times.
                 If there is a URL we can use in the Checklist, use it for the “scrape” execution_agent. Otherwise, DO NOT USE the “scrape” execution_agent AT ALL.
 
                 The "input" field in the "execution_agents" should always be a string.
