@@ -57,7 +57,7 @@ class ResultSummarizerAgent:
 
         prompt = f"""Please provide a JSON output with the following format:
             - output_summary : Rewrite the following text: {result}. Include relevant information, interesting URL (https:... etc) and examples. Provide extensive information, and feel free to include as many particulars as possible. Please DO NOT create new content or provide your own analysis, just use the raw data. This is extremely important.
-            - insights : Give a list of relevant insights please.
+            - insights : Give a short list of insights (max 3) where the value is extremely important info from the summary.
             - grade : Judge the relevance of the final summary with regards to the expected outcome: "{task.expected_output}" (return "Grade: ?/10", 0 would be no relevant data), please be strict while assessing the quality of the base text in relation to the task.
             - new_tasks : Give a small list of follow up tasks based on the summary and the insights.
 
@@ -94,12 +94,15 @@ class ResultSummarizerAgent:
     
 
     def reduceRawData(self, data: str, task: ExecutionAgent, agent: AgentData):
-        result = self.summarize_text(data, 10)
+        result = self.summarize_text(data, 20)
 
         prompt = f"""Please rewrite the following text: {result}.
-            Your summary should provide a clear and concise overview of the main points discussed in the text, with a focus on information that is relevant to achieving the following outcome: {task.expected_output}.
+            Your summary should provide a clear overview of the main points discussed in the text, with a focus on information that is relevant to achieving the following outcome: {task.expected_output}.
+            
             Please DO NOT create new content or provide your own analysis. Instead, focus on extracting relevant information and presenting it in a logical and easy-to-understand manner.
-            If possible, please include any URLs (https:... etc) or examples that help to illustrate the key points. Your summary should be comprehensive and detailed.
+            
+            Please include any URLs (https:... etc) or examples that help to illustrate the key points.
+            Your summary should be comprehensive and detailed, and be at the very leats 2 paragraphs long.
             """
 
         response = agent.open_ai.generate_text(prompt, 0.1)

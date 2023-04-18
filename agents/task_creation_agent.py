@@ -22,7 +22,7 @@ class TaskCreationAgent:
             - Final Objective: {agent.objective}.
             - Previous task result: {last_task.result}.
 
-            Output: A JSON representing a new task that advances our objective, based on the insights and the new_tasks from the previous task:
+            Output: A JSON representing a new task that advances our objective, based on the insights and the new_tasks from the previous task (choose from new_tasks if suitable):
             - description : short description of the task
             - execution_agents : please return a maximum of 3 execution_agents, you can select the same agent multiple times. Use information from the previous task.
             - expected_output : what to expect in the output based on the description
@@ -47,8 +47,8 @@ class TaskCreationAgent:
                     "result": keep empty
                     }},
                     {{
-                    "name": "scrape", // scrape a website
-                    "input": a single url coming from the previous results ONLY,
+                    "name": "scrape", // scrape a website that you learned from the previous task results
+                    "input": a single url // coming from the previous results ONLY rather than relying on your internal memory!!!
                     "expected_output": what is expected as output,
                     "result": keep empty
                     }}
