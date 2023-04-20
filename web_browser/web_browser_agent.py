@@ -1,11 +1,12 @@
+from collections import deque
 from web_browser.result_summarizer_agent import ResultSummarizerAgent
 
 
 
 class WebBrowserAgent:
     def __init__(self):
-        self.used_keywords: list[str] = []
-        self.used_urls: list[str] = []
+        self.used_keywords = deque([])
+        self.used_urls = deque([])
         self.summarizer = ResultSummarizerAgent()
     
 
@@ -20,7 +21,7 @@ class WebBrowserAgent:
 
 
     def get_keyword_prompt(self, task: str):
-        prompt = f"""You are a Google Agent, helping me searching the google search engine.
+        prompt = f"""You are a Google Agent, helping me searching the google search engine. Be specific.
 
             Me: Find a cheap hotel in London
             You: hotels london cheap
@@ -55,6 +56,8 @@ class WebBrowserAgent:
 
         query = agent.open_ai.generate_text(prompt, 0.1)
         agent.logger.log(f"Keywords: {query}")
+
+        self.used_keywords.append(query)
 
         scraped_data = agent.browser.get_from_internet(query, self.used_urls)
         summary = self.summarizer.summarize(scraped_data, agent)

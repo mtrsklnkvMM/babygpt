@@ -36,6 +36,7 @@ class BrowserAgent:
             print(f"""3-{stripped_query}""")
             response = self.service.cse().list(q=stripped_query, cx=self.engine_id, num=num_results).execute()
             links = self.summarizer_helper.prioritize_links(response, stripped_query, used_urls)
+            used_urls.extend(links[:2])
             return links[:2]
         
         except HttpError as error:

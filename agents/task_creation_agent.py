@@ -42,9 +42,9 @@ class TaskCreationAgent:
             main_prompt = self.get_step_prompt(complete_string, database_str)
         
         output_prompt = f"""
-            We will be using google to retrieve information.
+            We will be using google to retrieve information so please explain your train of thoughts.
+            End with the very specific task like:
 
-            Please explain your train of thoughts and then end with:
             TASK: [task 1 or 2 sentences max]"""
         
         prompt = problem_prompt + main_prompt + output_prompt
