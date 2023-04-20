@@ -31,6 +31,7 @@ class TaskCreationAgent:
                 We also stored this info in our database for context: "{database}".
 
                 Please come up with the next step using information from this database dump in order to solve our problem (be specific).
+                NOTE that google doesn't have access to the database ! only you.
             """
         return prompt
     
@@ -48,12 +49,8 @@ class TaskCreationAgent:
 
             We will be using google to solve this particular task.
 
-            So end with the very specific query search/keywords (no placeholders! be very clear, return just 1 query) following this format (NOTE that google doesn't have access to the database ! only you):
-            
-            GOOGLE: ?
-            
-            example:
-                GOOGLE: Cambridge Weather May 2023"""
+            Write the query search/keywords after 'GOOGLE', No placeholders! be very clear, return just 1 query following this format:
+            example: GOOGLE: Cambridge Weather May 2023"""
         
         prompt = problem_prompt + main_prompt + output_prompt
 
