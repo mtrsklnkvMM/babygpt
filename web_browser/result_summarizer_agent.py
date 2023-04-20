@@ -45,7 +45,7 @@ class ResultSummarizerAgent:
         self.nlp = spacy.load('en_core_web_sm')
         
 
-    def get_domain(link):
+    def get_domain(self, link):
         # Extract domain name from link using regex
         match = re.search(r'(https?://)?(www\.)?([a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)', link)
         if match:
