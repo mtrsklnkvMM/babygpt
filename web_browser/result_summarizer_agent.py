@@ -1,5 +1,4 @@
 import re
-from agents.IAgent import AgentData
 import spacy
 from spacy.lang.en.stop_words import STOP_WORDS
 from collections import defaultdict
@@ -143,7 +142,7 @@ class ResultSummarizerAgent:
     
     
     
-    def summarize(self, text: str, agent: AgentData):
+    def summarize(self, text: str, agent):
         result = self.summarize_text(text)
 
         prompt = f"""Please rewrite this text to make it cleaner: "{result}"."""

@@ -1,4 +1,3 @@
-from agents.IAgent import AgentData
 from web_browser.result_summarizer_agent import ResultSummarizerAgent
 
 
@@ -39,7 +38,7 @@ class WebBrowserAgent:
     
 
 
-    def google(self, task: str, agent: AgentData, retry = 0) -> str:
+    def google(self, task: str, agent, retry = 0) -> str:
         prompt = self.get_keyword_prompt(task)
         query = agent.open_ai.generate_text(prompt, 0.1)
 
