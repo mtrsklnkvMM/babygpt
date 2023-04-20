@@ -1,5 +1,5 @@
 from agents.IAgent import AgentData
-from web_browser.web_browser_agent import ExecutionDispatcherAgent, WebBrowserAgent
+from web_browser.web_browser_agent import  WebBrowserAgent
 from agents.task_creation_agent import TaskCreationAgent
 
 
@@ -13,6 +13,6 @@ class TaskProcessor:
         
         data_to_save = self.web_agent.google(new_task, agent)
         agent.logger.log(f"Save: {data_to_save}")
-        
+
         agent.completed_tasks.append(new_task)
         agent.database = agent.database + " ; " + data_to_save
