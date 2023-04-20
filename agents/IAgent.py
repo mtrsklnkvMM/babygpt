@@ -1,4 +1,3 @@
-from collections import deque
 from typing import NamedTuple
 from vector.weaviate import Weaviate
 from web_browser.browser_agent import BrowserAgent
