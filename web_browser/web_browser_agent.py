@@ -47,12 +47,12 @@ class WebBrowserAgent:
         
         agent.logger.log(f"Keyword Prompt: {task}")
 
-        query = agent.open_ai.generate_text(task, 0.1)
-        agent.logger.log(f"Keywords: {query}")
+        #query = agent.open_ai.generate_text(task, 0.1)
+        #agent.logger.log(f"Keywords: {query}")
 
-        self.used_keywords.append(query)
+        self.used_keywords.append(task)
 
-        scraped_data = agent.browser.get_from_internet(query, self.used_urls)
+        scraped_data = agent.browser.get_from_internet(task, self.used_urls)
         summary = self.summarizer.summarize(scraped_data, agent)
 
         agent.logger.log(f"Summary: {summary}")

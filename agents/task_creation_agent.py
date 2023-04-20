@@ -45,7 +45,7 @@ class TaskCreationAgent:
         output_prompt = f"""
             We will be using google to retrieve information so please go through your train of thoughts.
 
-            End with the very specific query search/keywords following this format (NOTE that google doesn't have access to the database ! only you):
+            End with the very specific query search/keywords (no placeholders! be very clear) following this format (NOTE that google doesn't have access to the database ! only you):
 
             GOOGLE: ?"""
         
