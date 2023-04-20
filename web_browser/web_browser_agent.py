@@ -20,7 +20,16 @@ class WebBrowserAgent:
 
 
     def get_keyword_prompt(self, task: str):
-        prompt = f"""I want to use the google search engine to search for: "{task}", please pretend you are searching google and return what you would type (just return that):"""
+        prompt = f"""You are a Google Agent, helping me searching the google search engine.
+
+            Me: Find a cheap hotel in London
+            You: hotels london cheap
+
+            Me: Research the specific policies South Korea has implemented to address the low birth rate
+            You: korea birth rate policies
+
+            Me: {task}
+            You:"""
 
         if self.used_keywords:
             message = f"(Note: Don't use the following exact sets of keywords: {' or '.join(self.used_keywords)})"
