@@ -42,7 +42,9 @@ class WebBrowserAgent:
     def get_analysis_prompt(self, summary: str, task: str):
         prompt = f"""My google search gave me the following result: '{summary}'.
             I was trying to solve the following problem: '{task}'.
-            Did I get the information I wanted? If yes just return what you think I should store in my database. If not just write 'GOOGLE' and I will try again. """
+            Did I get the information I wanted?. 
+            If yes extract the important information from the result.
+            If not just write 'GOOGLE' and I will try again. """
         return prompt
     
 

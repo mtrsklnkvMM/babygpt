@@ -23,7 +23,7 @@ openai_provider = OpenAiProvider(OPENAI_API_KEY)
 logger = LoggerAgent()
 task_processor = TaskProcessor()
 completed_tasks = deque([])
-database = ""
+database = list[str]
 
 OBJECTIVE = os.getenv("OBJECTIVE", "")
 

@@ -15,4 +15,4 @@ class TaskProcessor:
         agent.logger.log(f"Save: {data_to_save}")
 
         agent.completed_tasks.append(new_task)
-        agent.database += f""" ; {data_to_save}"""
+        agent.database.append(data_to_save)

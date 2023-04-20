@@ -9,7 +9,7 @@ from completion.openai_provider import OpenAiProvider
 class AgentData(NamedTuple):
     objective: str
     completed_tasks: list[str]
-    database: str
+    database: list[str]
     vectordb: Weaviate
     open_ai: OpenAiProvider
     browser: BrowserAgent

@@ -56,19 +56,14 @@ class ResultSummarizerAgent:
 
     def prioritize_links(self, response, query, used_urls: list[str]):
         keywords = self.nlp(query).text.split()
-        print(keywords)
         priorities = []
 
         for item in response['items']:
             
             link = item['link']
-            print(link)
             domain = self.get_domain(link)
-            print(domain)
             snippet = item.get('snippet')
-            print(snippet)
             title = item.get('title')
-            print(title)
             score = 0
         
             if domain in self.reputable_sources:
@@ -79,10 +74,8 @@ class ResultSummarizerAgent:
                     score += 1
             if link in used_urls:
                 score -= 10
-            print(link)
             priorities.append((link, score))
     
-        print(priorities)
         priorities.sort(key=lambda x: x[1], reverse=True)
     
         return [p[0] for p in priorities]
@@ -121,7 +114,6 @@ class ResultSummarizerAgent:
             chunk = text[i:i+chunk_size]
             doc = self.nlp(chunk)
             num_tokens = len(doc)
-            print(num_tokens)
 
             # Build a list of sentences and their corresponding TextRank scores
             sentence_scores = defaultdict(float)
@@ -157,4 +149,5 @@ class ResultSummarizerAgent:
         response = agent.open_ai.generate_text(prompt, 0.1)
 
         agent.logger.log(f"Task Summary: {response}")
+        
         return response

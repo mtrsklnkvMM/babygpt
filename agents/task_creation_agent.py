@@ -27,7 +27,7 @@ class TaskCreationAgent:
     
     def get_step_prompt(self, tasks: str, database: str):
         prompt = f""" This is the list of task we completed: {tasks}.
-                We already have all this information saved in our database: {database}.
+                We already have all this information saved in our database: "{database}".
                 Please come up with the next task that is necessary to complete this objective.
             """
         return prompt
@@ -37,8 +37,9 @@ class TaskCreationAgent:
         main_prompt = self.get_first_prompt()
 
         if len(agent.completed_tasks) > 0:
+            database_str = " ; ".join(d for d in agent.database)
             complete_string = " and ".join(complete for complete in agent.completed_tasks)
-            main_prompt = self.get_step_prompt(complete_string, agent.database)
+            main_prompt = self.get_step_prompt(complete_string, database_str)
         
         output_prompt = f"""
             We will be using google to retrieve information.
@@ -49,7 +50,7 @@ class TaskCreationAgent:
         prompt = problem_prompt + main_prompt + output_prompt
 
         agent.logger.log(f"New Task Prompt: {prompt}")
-        
+
         response = agent.open_ai.generate_text(prompt)
 
         agent.logger.log(f"New Task Response: {response}")
