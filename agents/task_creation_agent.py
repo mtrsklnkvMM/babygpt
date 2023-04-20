@@ -14,21 +14,22 @@ class TaskCreationAgent:
             return ""
     
     def get_problem_prompt(self, agent: AgentData):
-        prompt = f"""
+        prompt = f""" You are a Planner Agent.
                 We are trying to solve the following problem: {agent.objective}.
-                In order to solve this objective we might need multiple steps (over 10), this is just one of these step."""
+                In order to solve this problem we might need multiple steps (over 10), this is just one of these step, keep that in mind."""
         return prompt
 
     def get_first_prompt(self):
         prompt = f"""
-                Please come up with the very first task that is necessary to complete this objective.
+                Please come up with the very first task that is necessary to solve this problem.
             """
         return prompt
     
     def get_step_prompt(self, tasks: str, database: str):
-        prompt = f""" This is the list of task we completed: {tasks}.
-                We already have all this information saved in our database: "{database}".
-                Please come up with the next task that is necessary to complete this objective.
+        prompt = f""" This is the list of task we already completed: {tasks}.
+                We stored this info in our database for context: "{database}".
+
+                Please come up with the next task using information from this database dump in order to solve our problem.
             """
         return prompt
     
@@ -43,7 +44,7 @@ class TaskCreationAgent:
         
         output_prompt = f"""
             We will be using google to retrieve information so please explain your train of thoughts.
-            End with the very specific task like:
+            End with the very specific/detailed task following this format (NOTE that the Search Agent doesn't have access to the database, only you):
 
             TASK: [task 1 or 2 sentences max]"""
         
