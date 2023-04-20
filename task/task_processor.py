@@ -1,15 +1,17 @@
 from agents.IAgent import AgentData
-from agents.exec_dispatcher_agent import ExecutionDispatcherAgent
+from web_browser.web_browser_agent import ExecutionDispatcherAgent, WebBrowserAgent
 from agents.task_creation_agent import TaskCreationAgent
 
 
 class TaskProcessor:
     def __init__(self):
         self.task_creation_agent = TaskCreationAgent()
-        self.execution_agent = ExecutionDispatcherAgent()
+        self.web_agent = WebBrowserAgent()
 
     def process_task(self, agent: AgentData):
-        new_task = agent.active_tasks.popleft()
-        task_with_results = self.execution_agent.dispatch(new_task, agent)
-        agent.completed_tasks.append(task_with_results)
-        self.task_creation_agent.create_tasks(task_with_results, agent)
+        new_task = self.task_creation_agent.create_task(agent)
+        
+        data_to_save = self.web_agent.google(new_task, agent)
+
+        agent.completed_tasks.append(new_task)
+        agent.database = agent.database + " ; " + data_to_save

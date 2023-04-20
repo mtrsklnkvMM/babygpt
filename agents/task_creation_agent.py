@@ -1,42 +1,56 @@
-import itertools
 from agents.IAgent import AgentData
-from agents.ITask import Task
+
 
 
 class TaskCreationAgent:
     def __init__(self):
         pass
     
-
-    def create_first_task(self, agent: AgentData):
+    def extract_task_text(self, text):
+        task_index = text.find("TASK:")
+        if task_index != -1:
+            return text[task_index + len("TASK:"):]
+        else:
+            return ""
+    
+    def get_problem_prompt(self, agent: AgentData):
         prompt = f"""
-            You are a task creation AI that creates a task with the following objective: {agent.objective}.
-            Your job is to return the very first task for this objective
-            Return the very generic task as a string."""
+                We are trying to solve the following problem: {agent.objective}.
+                In order to solve this objective we might need multiple steps (over 10), this is just one of these step."""
+        return prompt
 
-        response = agent.open_ai.generate_text(prompt)
-        agent.logger.log(f"First Task: {response}")
-        agent.active_tasks.append(Task(id=1, description=response))
-
-
-    def create_tasks(self, last_task: Task, agent: AgentData):
-        complete_string = " AND ".join(complete.description for complete in agent.completed_tasks)
-
+    def get_first_prompt(self):
         prompt = f"""
-            You are a task creation AI that uses the result of an execution agent to create new tasks with the following final objective: {agent.objective}.
-            The last completed task has the result: {last_task.result}.
-            This result was based on this task description: {last_task.description}.
+                Please come up with the very first task that is necessary to complete this objective.
+            """
+        return prompt
+    
+    def get_step_prompt(self, tasks: str, database: str):
+        prompt = f""" This is the list of task we completed: {tasks}.
+                We already have all this information saved in our database: {database}.
+                Please come up with the next task that is necessary to complete this objective.
+            """
+        return prompt
+    
+    def create_task(self, agent: AgentData):
+        problem_prompt = self.get_problem_prompt(agent)
+        main_prompt = self.get_first_prompt()
 
-            Based on that result return a prioritized array of up to 3 CONCISE tasks, they should not overlap with any previous tasks mentioned in {complete_string} and should contribute to the advancement of our objective.
-            Please be very precise and include important information such as URLs or names into the task."""
-
-        response = agent.open_ai.generate_text(prompt)
-        agent.logger.log(f"New Tasks: {response}")
-
-        new_tasks = response.split("\n") if "\n" in response else [response]
+        if len(agent.completed_tasks) > 0:
+            complete_string = " and ".join(complete for complete in agent.completed_tasks)
+            main_prompt = self.get_step_prompt(complete_string, agent.database)
         
-        id_iter = itertools.count(start=last_task.id)
-        new_tasks_arr = [Task(id=next(id_iter), description=task) for task in new_tasks]
+        output_prompt = f"""
+            We will be using google to retrieve information.
 
-        agent.active_tasks.clear()
-        agent.active_tasks.extend(new_tasks_arr)
+            Please explain your train of thoughts and then end with:
+            TASK: [task 1 or 2 sentences max]"""
+        
+        prompt = problem_prompt + main_prompt + output_prompt
+
+        response = agent.open_ai.generate_text(prompt)
+
+        agent.logger.log(f"New Task Response: {response}")
+
+        new_task = self.extract_task_text(response)
+        return new_task

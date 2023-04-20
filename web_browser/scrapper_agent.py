@@ -1,4 +1,5 @@
 import json
+import re
 import requests
 from bs4 import BeautifulSoup
 
@@ -17,6 +18,11 @@ class ScrapperAgent:
             
             # Extract text
             text = soup.get_text()
+            
+            # Extract text and clean it
+            text = soup.get_text()
+            text = re.sub(r'[^\w\s]', '', text)  # remove non-alphanumeric characters
+            text = re.sub(r'\s+', ' ', text)  # replace multiple whitespace with single space
             
             # Convert text to dictionary
             result_dict = {'text': text}
