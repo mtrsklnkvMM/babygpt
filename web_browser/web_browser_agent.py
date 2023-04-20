@@ -21,19 +21,10 @@ class WebBrowserAgent:
 
 
     def get_keyword_prompt(self, task: str):
-        prompt = f"""You are a Google Agent, helping me searching the google search engine. Be specific.
-
-            Me: Find a cheap hotel in London
-            You: hotels london cheap
-
-            Me: Research the specific policies South Korea has implemented to address the low birth rate
-            You: korea birth rate policies
-
-            Me: {task}
-            You:"""
+        prompt = f"""You are a Google Agent, helping me searching the google search engine. This is the task: {task}, please return the relevant google query as a string strictly:"""
 
         if self.used_keywords:
-            message = f"(Note: Don't use the following exact sets of keywords: {' or '.join(self.used_keywords)})"
+            message = f" (Note: Don't use these queries: {' or '.join(self.used_keywords)})"
             return prompt + message
         else:
             return prompt
@@ -51,15 +42,9 @@ class WebBrowserAgent:
 
 
     def google(self, task: str, agent, retry = 0) -> str:
-        prompt = self.get_keyword_prompt(task)
-        agent.logger.log(f"Keyword Prompt: {prompt}")
+        self.used_keywords.append(task)
 
-        query = agent.open_ai.generate_text(prompt, 0.1)
-        agent.logger.log(f"Keywords: {query}")
-
-        self.used_keywords.append(query)
-
-        scraped_data = agent.browser.get_from_internet(query, self.used_urls)
+        scraped_data = agent.browser.get_from_internet(task, self.used_urls)
         summary = self.summarizer.summarize(scraped_data, agent)
 
         agent.logger.log(f"Summary: {summary}")

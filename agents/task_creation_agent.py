@@ -14,7 +14,7 @@ class TaskCreationAgent:
             return ""
     
     def get_problem_prompt(self, agent: AgentData):
-        prompt = f""" You are a Planner Agent.
+        prompt = f"""You are a Planner Agent.
                 We are trying to solve the following problem: {agent.objective}.
                 In order to solve this problem we might need multiple steps (over 10), this is just one of these step, keep that in mind."""
         return prompt
