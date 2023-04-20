@@ -7,9 +7,9 @@ class TaskCreationAgent:
         pass
     
     def extract_task_text(self, text):
-        task_index = text.find("TASK:")
+        task_index = text.find("GOOGLE:")
         if task_index != -1:
-            return text[task_index + len("TASK:"):]
+            return text[task_index + len("GOOGLE:"):]
         else:
             return ""
     
@@ -43,10 +43,11 @@ class TaskCreationAgent:
             main_prompt = self.get_step_prompt(complete_string, database_str)
         
         output_prompt = f"""
-            We will be using google to retrieve information so please explain your train of thoughts.
-            End with the very specific/detailed task following this format (NOTE that the Search Agent doesn't have access to the database, only you):
+            We will be using google to retrieve information so please go through your train of thoughts.
 
-            TASK: [task 1 or 2 sentences max]"""
+            End with the very specific query search/keywords following this format (NOTE that google doesn't have access to the database ! only you):
+
+            GOOGLE: ?"""
         
         prompt = problem_prompt + main_prompt + output_prompt
 

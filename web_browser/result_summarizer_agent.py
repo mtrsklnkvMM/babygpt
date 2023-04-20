@@ -132,8 +132,8 @@ class ResultSummarizerAgent:
             summary = '\n'.join(top_sentences)
 
             # Limit summary to a maximum of 4000 characters
-            if len(summary) > 6000:
-                summary = summary[:6000] + '...'
+            if len(summary) > 4000:
+                summary = summary[:4000] + '...'
             
             summaries.append(summary)
         
@@ -149,5 +149,5 @@ class ResultSummarizerAgent:
         response = agent.open_ai.generate_text(prompt, 0.1)
 
         agent.logger.log(f"Task Summary: {response}")
-        
+
         return response
