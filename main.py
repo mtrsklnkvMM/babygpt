@@ -38,7 +38,7 @@ agent_data = AgentData(objective=OBJECTIVE,
 
 logger.log(f"Starting solving: {agent_data.objective}")
 
-for day in range(1, 3):
+for day in range(1, 8):
     logger.log(f"Day {day}")
     task_processor.process_task(agent_data)
     time.sleep(1)

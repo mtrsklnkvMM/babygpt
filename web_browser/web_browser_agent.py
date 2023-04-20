@@ -31,12 +31,13 @@ class WebBrowserAgent:
 
 
 
-    def get_analysis_prompt(self, summary: str, task: str):
+    def get_analysis_prompt(self, summary: str, task: str, agent):
         prompt = f"""My google search gave me the following result: '{summary}'.
-            I was trying to solve the following problem: '{task}'.
-            Did I get the information I wanted?. 
+            I was trying to solve the following problem: '{task}', to avance our objective: '{agent.objective}'.
 
-            If yes extract and return the important information from the result.
+            Did I get the information I wanted (be critical, we can't save useless data, space is limited)?
+
+            If yes just write 'MEMORY' and then a list of key points from the result that intersect with the problem at hand.
 
             If no just write 'GOOGLE' and I will try again. """
         return prompt
@@ -47,17 +48,15 @@ class WebBrowserAgent:
         
         agent.logger.log(f"Keyword Prompt: {task}")
 
-        #query = agent.open_ai.generate_text(task, 0.1)
-        #agent.logger.log(f"Keywords: {query}")
-
         self.used_keywords.append(task)
 
         scraped_data = agent.browser.get_from_internet(task, self.used_urls)
+
         summary = self.summarizer.summarize(scraped_data, agent)
 
         agent.logger.log(f"Summary: {summary}")
 
-        memory_prompt = self.get_analysis_prompt(summary, task)
+        memory_prompt = self.get_analysis_prompt(summary, task, agent)
 
         agent.logger.log(f"Memory Prompt: {memory_prompt}")
         
@@ -66,8 +65,9 @@ class WebBrowserAgent:
         agent.logger.log(f"Memory: {memory}")
 
         if self.check_for_google(memory) and retry < 3:
-            k = self.get_keyword_prompt(task)
-            return self.google(task, agent, retry + 1)
+            keys = self.get_keyword_prompt(task)
+            new_keys = agent.open_ai.generate_text(keys, 0.1)
+            return self.google(new_keys, agent, retry + 1)
         else:
             self.used_urls = []
             self.used_keywords = []

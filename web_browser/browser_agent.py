@@ -36,9 +36,9 @@ class BrowserAgent:
             print(f"""1-{stripped_query}""")
             response = self.service.cse().list(q=stripped_query, cx=self.engine_id, num=num_results).execute()
             links = self.summarizer_helper.prioritize_links(response, stripped_query, used_urls)
-            used_urls.extend(links[:2])
-            print(f"""2-{" ,".join(links[:2])}""")
-            return links[:2]
+            used_urls.extend(links[:1])
+            print(f"""2-{" ,".join(links[:1])}""")
+            return links[:1]
         
         except HttpError as error:
             print(f'An error occurred while browsing Google: {error}')
@@ -49,9 +49,14 @@ class BrowserAgent:
     def search_ddg(self, query, used_urls):
         try:
             stripped_query = self.strip_query(query)
-            data = self.fallback_service(stripped_query)
-            links = [r['href'] for r in data]
-            return links[:2]
+            print(f"""1-{stripped_query}""")
+
+            data = self.fallback_service(stripped_query, max_results=20)
+            #links = [r['href'] for r in data]
+            links = self.summarizer_helper.prioritize_links2(data, stripped_query, used_urls)
+            used_urls.extend(links[:1])
+            print(f"""2-{" ,".join(links[:1])}""")
+            return links[:1]
         
         except Exception as e:
             print(f'An error occurred while browsing DuckDuckGo: {e}')
@@ -60,11 +65,11 @@ class BrowserAgent:
 
 
     def search_internet(self, query, used_urls = []):
-        try:
-            return self.search_google(query, used_urls)
+        #try:
+            #return self.search_google(query, used_urls)
         
-        except HttpError as error:
-            print(f'An error occurred while browsing Google: {error}')
+        #except HttpError as error:
+           # print(f'An error occurred while browsing Google: {error}')
             print('Fallback to DuckDuckGo')
             return self.search_ddg(query, used_urls)
 

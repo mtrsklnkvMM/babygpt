@@ -37,3 +37,23 @@ class OpenAiProvider:
         except Exception as e:
             print(f"An error occurred: {e}")
             return ''
+
+    def generate_chat(self, messages, temperature=0.3):
+        try:
+            
+            completions = self.completions_with_backoff(
+                model="gpt-3.5-turbo",
+                messages=messages,
+                temperature=temperature,
+                max_tokens=self.max_tokens,
+                n=1,
+                stop=None,
+            )
+            
+            # Access the generated text
+            generated_text = completions["choices"][0]["message"]["content"]
+            return generated_text
+    
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return ''

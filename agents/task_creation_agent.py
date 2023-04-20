@@ -14,7 +14,7 @@ class TaskCreationAgent:
             return ""
     
     def get_problem_prompt(self, agent: AgentData):
-        prompt = f"""You are a Planner Agent.
+        prompt = f"""You are a Planner Agent
                 You are trying to solve the following problem: "{agent.objective}".
 
                 In order to solve this problem you might need multiple steps (over 10), this is just one of these step, keep that in mind."""
@@ -27,11 +27,11 @@ class TaskCreationAgent:
         return prompt
     
     def get_step_prompt(self, tasks: str, database: str):
-        prompt = f""" This is the list of steps we already took: {tasks}.
-                We also stored this info in our database for context: "{database}".
+        prompt = f""" This is the list of steps you already took: "{tasks}".
+                You also stored this info in our database for context: "{database}".
 
                 Please come up with the next step using information from this database dump in order to solve our problem (be specific).
-                NOTE that google doesn't have access to the database ! only you.
+                NOTE that no one else has access to the database ! only you, use it!
             """
         return prompt
     
@@ -45,7 +45,7 @@ class TaskCreationAgent:
             main_prompt = self.get_step_prompt(complete_string, database_str)
         
         output_prompt = f"""
-            Please go through your train of thoughts.
+            Please explain your reasoning, we need to brainstorm here.
 
             We will be using google to solve this particular task.
 

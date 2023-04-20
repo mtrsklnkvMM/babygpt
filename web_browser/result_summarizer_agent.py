@@ -7,48 +7,44 @@ class ResultSummarizerAgent:
     def __init__(self):
         self.reputable_sources = [
             # News sources
-            "reuters.com",
-            "apnews.com",
-            "nytimes.com",
-            "washingtonpost.com",
-            "bbc.com/news",
-            "cnn.com",
-            "theguardian.com",
-            "aljazeera.com",
-            "economist.com",
-            "bloomberg.com",
+            "reuters",
+            "apnews",
+            "nytimes",
+            "washingtonpost",
+            "bbc",
+            "cnn",
+            "theguardian",
+            "aljazeera",
+            "economist",
+            "bloomberg",
             
             # Academic sources
-            "pubmed.ncbi.nlm.nih.gov",
-            "arxiv.org",
-            "scholar.google.com",
-            "jstor.org",
-            "sciencedirect.com",
-            "ieeexplore.ieee.org",
-            "dl.acm.org",
-            "journals.plos.org/plosone",
-            "nature.com",
-            "sciencemag.org",
+            "pubmed",
+            "arxiv",
+            "scholar",
+            "sciencedirect",
+            "ieeexplore",
+            "journals",
+            "nature",
+            "sciencemag",
             
             # Travel sources
-            "tripadvisor.com",
-            "lonelyplanet.com",
-            "fodors.com",
-            "roughguides.com",
-            "frommers.com",
-            "nationalgeographic.com/traveler",
-            "cntraveler.com",
-            "travelandleisure.com",
-            "ricksteves.com",
-            "afar.com"
+            "tripadvisor",
+            "lonelyplanet",
+            "roughguides",
+            "frommers",
+            "nationalgeographic",
+            "cntraveler",
+            "travelandleisure",
         ]
         self.nlp = spacy.load('en_core_web_sm')
         
 
     def get_domain(self, link):
         # Extract domain name from link using regex
-        match = re.search(r'(https?://)?(www\.)?([a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)', link)
+        match = re.search(r'(https?://)?(www\.)?([a-zA-Z0-9-]+)\.[a-zA-Z]{2,}', link)
         if match:
+            print(match.group(3))
             return match.group(3)
         else:
             return None
@@ -67,11 +63,11 @@ class ResultSummarizerAgent:
             score = 0
         
             if domain in self.reputable_sources:
-                score += 2
+                score += 1
             
             for keyword in keywords:
                 if snippet and keyword in snippet.lower() or title and keyword in title.lower():
-                    score += 1
+                    score += 2
             if link in used_urls:
                 score -= 10
             priorities.append((link, score))
@@ -81,7 +77,34 @@ class ResultSummarizerAgent:
         return [p[0] for p in priorities]
     
 
-    def trim_sorted_sentences(self, sorted_sentences, max_length = 6000):
+    def prioritize_links2(self, response, query, used_urls: list[str]):
+            keywords = self.nlp(query).text.split()
+            priorities = []
+
+            for item in response:
+                
+                link = item['href']
+                domain = self.get_domain(link)
+                title = item.get('title')
+                score = 0
+            
+                if domain in self.reputable_sources:
+                    score += 3
+                
+                for keyword in keywords:
+                    if title and keyword in title.lower():
+                        score += 1
+                if link in used_urls:
+                    score -= 10
+                priorities.append((link, score))
+        
+            priorities.sort(key=lambda x: x[1], reverse=True)
+        
+            return [p[0] for p in priorities]
+    
+
+
+    def trim_sorted_sentences(self, sorted_sentences, max_length = 8000):
         # Initialize a list to store the extracted sentences
         extracted_sentences = []
 
@@ -132,8 +155,8 @@ class ResultSummarizerAgent:
             summary = '\n'.join(top_sentences)
 
             # Limit summary to a maximum of 4000 characters
-            if len(summary) > 4000:
-                summary = summary[:4000] + '...'
+            if len(summary) > 6000:
+                summary = summary[:6000] + '...'
             
             summaries.append(summary)
         
