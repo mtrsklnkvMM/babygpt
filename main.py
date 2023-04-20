@@ -23,11 +23,12 @@ openai_provider = OpenAiProvider(OPENAI_API_KEY)
 logger = LoggerAgent()
 task_processor = TaskProcessor()
 completed_tasks = deque([])
+database = ""
 
 OBJECTIVE = os.getenv("OBJECTIVE", "")
 
 agent_data = AgentData(objective=OBJECTIVE,
-                       database='',
+                       database=database,
                        completed_tasks=completed_tasks,
                        vectordb=None,
                        open_ai=openai_provider,

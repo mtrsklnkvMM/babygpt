@@ -65,16 +65,16 @@ class ResultSummarizerAgent:
             title = item.get('title')
             score = 0
         
-        if domain in self.reputable_sources:
-            score += 2
-        
-        for keyword in keywords:
-            if snippet and keyword in snippet.lower() or title and keyword in title.lower():
-                score += 1
-        if link in used_urls:
-            score -= 10
-        
-        priorities.append((link, score))
+            if domain in self.reputable_sources:
+                score += 2
+            
+            for keyword in keywords:
+                if snippet and keyword in snippet.lower() or title and keyword in title.lower():
+                    score += 1
+            if link in used_urls:
+                score -= 10
+            print(link)
+            priorities.append((link, score))
     
         priorities.sort(key=lambda x: x[1], reverse=True)
     

@@ -33,23 +33,34 @@ class WebBrowserAgent:
     def get_analysis_prompt(self, summary: str, task: str):
         prompt = f"""My google search gave me the following result: '{summary}'.
             I was trying to solve the following problem: '{task}'.
-            Did I get the information I wanted? If yes just return what you think I should store in my database. If not just return GOOGLE and I will try again. """
+            Did I get the information I wanted? If yes just return what you think I should store in my database. If not just write 'GOOGLE' and I will try again. """
         return prompt
     
 
 
     def google(self, task: str, agent, retry = 0) -> str:
         prompt = self.get_keyword_prompt(task)
+        agent.logger.log(f"Keyword Prompt: {prompt}")
+
         query = agent.open_ai.generate_text(prompt, 0.1)
+        agent.logger.log(f"Keywords: {query}")
 
         scraped_data = agent.browser.get_from_internet(query, self.used_urls)
         summary = self.summarizer.summarize(scraped_data, agent)
 
         agent.logger.log(f"Summary: {summary}")
 
-        if self.check_for_google(summary) and retry < 3:
+        memory_prompt = self.get_analysis_prompt(summary, task)
+
+        agent.logger.log(f"Memory Prompt: {memory_prompt}")
+        
+        memory = agent.open_ai.generate_text(memory_prompt, 0.1)
+
+        agent.logger.log(f"Memory: {memory}")
+
+        if self.check_for_google(memory) and retry < 3:
             return self.google(task, agent, retry + 1)
         else:
             self.used_urls = []
             self.used_keywords = []
-            return summary
+            return memory
