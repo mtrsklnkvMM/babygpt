@@ -12,6 +12,7 @@ class TaskProcessor:
         new_task = self.task_creation_agent.create_task(agent)
         
         data_to_save = self.web_agent.google(new_task, agent)
-
+        agent.logger.log(f"Save: {data_to_save}")
+        
         agent.completed_tasks.append(new_task)
         agent.database = agent.database + " ; " + data_to_save

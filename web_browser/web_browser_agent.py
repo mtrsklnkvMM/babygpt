@@ -46,6 +46,8 @@ class WebBrowserAgent:
         scraped_data = agent.browser.get_from_internet(query, self.used_urls)
         summary = self.summarizer.summarize(scraped_data, agent)
 
+        agent.logger.log(f"Summary: {summary}")
+
         if self.check_for_google(summary) and retry < 3:
             return self.google(task, agent, retry + 1)
         else:

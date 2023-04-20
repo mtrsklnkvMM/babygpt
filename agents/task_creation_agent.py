@@ -48,6 +48,8 @@ class TaskCreationAgent:
         
         prompt = problem_prompt + main_prompt + output_prompt
 
+        agent.logger.log(f"New Task Prompt: {prompt}")
+        
         response = agent.open_ai.generate_text(prompt)
 
         agent.logger.log(f"New Task Response: {response}")
