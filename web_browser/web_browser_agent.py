@@ -42,9 +42,15 @@ class WebBrowserAgent:
 
 
     def google(self, task: str, agent, retry = 0) -> str:
-        self.used_keywords.append(task)
+        prompt = self.get_keyword_prompt(task)
+        agent.logger.log(f"Keyword Prompt: {prompt}")
 
-        scraped_data = agent.browser.get_from_internet(task, self.used_urls)
+        query = agent.open_ai.generate_text(prompt, 0.1)
+        agent.logger.log(f"Keywords: {query}")
+
+        self.used_keywords.append(query)
+
+        scraped_data = agent.browser.get_from_internet(query, self.used_urls)
         summary = self.summarizer.summarize(scraped_data, agent)
 
         agent.logger.log(f"Summary: {summary}")
