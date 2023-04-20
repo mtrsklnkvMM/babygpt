@@ -30,10 +30,10 @@ class BrowserAgent:
 
 
 
-    def search_google(self, query, used_urls, num_results=20):
+    def search_google(self, query, used_urls, num_results=10):
         try:
             stripped_query = self.strip_query(query)
-            print(stripped_query)
+            print(f"""3-{stripped_query}""")
             response = self.service.cse().list(q=stripped_query, cx=self.engine_id, num=num_results).execute()
             links = self.summarizer_helper.prioritize_links(response, stripped_query, used_urls)
             return links[:2]
@@ -59,7 +59,7 @@ class BrowserAgent:
 
     def search_internet(self, query, used_urls = []):
         try:
-            print(query)
+            print(f"""2-{query}""")
             return self.search_google(query, used_urls)
         
         except HttpError as error:
@@ -70,7 +70,7 @@ class BrowserAgent:
 
 
     def get_from_internet(self, query, used_urls = []):
-        print(query)
+        print(f"""1-{query}""")
         results = self.search_internet(query, used_urls)
         scraped_data = []
         for result in results:
