@@ -50,8 +50,8 @@ class BrowserAgent:
         
         except HttpError as error:
             print(f'An error occurred while browsing Google: {error}')
-            print('Fallback to DuckDuckGo')
-            return self.browse_ddg(query)
+        print('Fallback to DuckDuckGo')
+        return self.browse_ddg(query)
 
 
     def scrape(self, link):

@@ -18,7 +18,7 @@ class ExecutionDispatcherAgent:
         else:
             return 10
         
-    def dispatch(self, task: Task, agent: AgentData, retry: dict = None) -> str:
+    def dispatch(self, task: Task, agent: AgentData, retry = 0) -> str:
         prompt = f"""You are an Assistant Agent and your job is to search for information.
             Our global objective is to {agent.objective}.
             We need to concentrate on the following task: {task.description}.
@@ -49,10 +49,10 @@ class ExecutionDispatcherAgent:
             else:
                 agent.logger.log(f"error with {response_str}")
  
-                if retry["retry_count"] < 3:
+                if retry < 3:
                     # Update retry data if there's an error with response_str
-                    retry["info"] += f"Error with response syntax: {response_str}\n"
-                    retry["retry_count"] += 1
+                    #retry["info"] += f"Error with response syntax: {response_str}\n"
+                    retry += 1
                     return self.dispatch(task, agent, retry)
                 else:
                     return "Failed to complete task. Max retries exceeded."
@@ -66,9 +66,9 @@ class ExecutionDispatcherAgent:
         grade = self.extract_grade(full_result)
 
         if grade < 6:
-            if retry["retry_count"] < 3:
-                retry["info"] += f"Result was too poor as the grade was {grade}\n"
-                retry["retry_count"] += 1
+            if retry < 3:
+                #retry["info"] += f"Result was too poor as the grade was {grade}\n"
+                retry += 1
                 return self.dispatch(task, agent, retry)
             else:
                 full_task_with_results = Task(id=task.id, description=task.description, result=full_result)
